@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+/* 카드뉴스 느낌: 종이색 바탕, 진한 남색 글씨, 형광펜 노랑, 산호색 강조 */
+:root {
+  --background: #f7f3ea;
+  --surface: #fffdf8;
+  --surface-2: #f0ebdf;
+  --foreground: #1c2333;
+  --muted: #6b6f7d;
+  --line: #e4ddcd;
+  --ink: #1f2a44;
+  --ink-soft: #2c3a5c;
+  --accent: #ef5b4b;
+  --accent-strong: #d9473a;
+  --accent-soft: #fde7e3;
+  --mark: #ffe066;
+  --mark-soft: #fff5c7;
+  --success: #1f9d6b;
+  --success-soft: #e1f5ec;
+  --danger: #d6453a;
+  --danger-soft: #fdecea;
+  --shadow: 0 1px 2px rgb(31 42 68 / 0.05), 0 6px 20px rgb(31 42 68 / 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #12151d;
+    --surface: #1a1e29;
+    --surface-2: #232838;
+    --foreground: #eceef4;
+    --muted: #9ba0b2;
+    --line: #2d3345;
+    --ink: #232c45;
+    --ink-soft: #2e3a5a;
+    --accent: #ff7a6b;
+    --accent-strong: #ff9488;
+    --accent-soft: #3a211e;
+    --mark: #f5d24b;
+    --mark-soft: #3a3418;
+    --success: #43d39b;
+    --success-soft: #14322a;
+    --danger: #ff7b6e;
+    --danger-soft: #3b1c1a;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 20px rgb(0 0 0 / 0.3);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-mark: var(--mark);
+  --color-mark-soft: var(--mark-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --shadow-card: var(--shadow);
+  --font-sans: "Pretendard Variable", Pretendard, system-ui, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* 형광펜으로 그은 듯한 밑줄 강조 */
+.marker {
+  background: linear-gradient(transparent 58%, var(--mark) 58%, var(--mark) 92%, transparent 92%);
+  padding: 0 0.1em;
+}
