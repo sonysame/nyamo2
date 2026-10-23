@@ -40,9 +40,17 @@ create table if not exists gemini_log (
 );
 create index if not exists gemini_log_created on gemini_log (created_at);
 
+-- 관리자 페이지에서 고른 Gemini 모델 같은 앱 설정
+create table if not exists app_settings (
+  key text primary key,
+  value text not null,
+  updated_at timestamptz not null default now()
+);
+
 alter table decks enable row level security;
 alter table user_decks enable row level security;
 alter table gemini_log enable row level security;
+alter table app_settings enable row level security;
 
 -- 복습 기능을 뺐다. 예전 버전으로 reviews 표를 만들었다면 지워도 된다:
 -- drop table if exists reviews;

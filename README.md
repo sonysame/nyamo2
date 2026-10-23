@@ -15,7 +15,7 @@
 3. 없으면 Gemini를 **한 번** 불러 요약, 핵심 포인트, 문장 카드(뜻, 핵심 표현, 해설, 새 예문, 타임스탬프)를 JSON으로 받아요. 10분 영상 기준 15~40초, 영상 토큰 약 5만 개(저해상도 모드)예요.
    - 카드의 영어 문장은 **영상에서 가르친 것만** 넣어요. 댓글은 그 문장의 철자를 확인하는 데만 쓰고, 댓글에만 있는 문장(구독자가 만든 연습 문장)은 넣지 않도록 프롬프트로 막아요.
    - 503(붐빔)은 3초, 10초 쉬고 두 번까지 다시 시도해요. 호출 하나당 240초 제한이 있고, 함수 최대 시간은 300초예요.
-   - 시도마다(실패와 재시도 포함) `gemini_log`에 남겨서 하루 한도를 셉니다. 앱 전체 기본 400회, 한 사람 10회예요.
+   - 시도마다(실패와 재시도 포함) `gemini_log`에 남겨서 하루 한도를 셉니다. 앱 전체 기본 400회예요(사람별 제한은 없어요).
 4. 핵심 카드(영어 문장과 한국어 뜻, 핵심 표현은 노란색)를 열면 내 목록에 들어가고 "본 영상"으로 표시돼요. 한국어/영어 가리기로 떠올려 보며 공부해요.
 
 ## 로컬에서 실행하기
@@ -23,7 +23,7 @@
 ### 1. Supabase 새 프로젝트
 
 1. [supabase.com](https://supabase.com)에서 **New project**를 만들어요(무료 등급, 지역은 Northeast Asia (Seoul) 추천).
-2. **SQL Editor**에 [supabase/schema.sql](supabase/schema.sql) 내용을 붙여 넣고 실행해요.
+2. **SQL Editor**에 [supabase/schema.sql](supabase/schema.sql) 내용을 붙여 넣고 실행해요. (이미 예전 schema.sql로 만들었다면 [supabase/migrations/001_app_settings.sql](supabase/migrations/001_app_settings.sql)만 실행해요.)
 3. **Project Settings → API Keys**에서 다음 값을 복사해요.
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
    - Publishable key → `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
@@ -75,9 +75,13 @@ node --conditions=react-server --env-file=.env.local scripts/try-video.mjs https
 
 1. 이 폴더를 GitHub 저장소로 올려요(`.env.local`은 `.gitignore`에 들어 있어 올라가지 않아요).
 2. [vercel.com](https://vercel.com) → **Add New → Project**에서 저장소를 가져와요. Framework는 Next.js로 자동 인식돼요.
-3. **Environment Variables**에 `.env.example`의 값을 모두 넣어요(`GEMINI_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `YOUTUBE_API_KEY`, `GEMINI_MODEL`, `DAILY_GENERATE_LIMIT`, `USER_DAILY_LIMIT`).
+3. **Environment Variables**에 `.env.example`의 값을 모두 넣어요(`GEMINI_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `YOUTUBE_API_KEY`, `GEMINI_MODEL`, `DAILY_GENERATE_LIMIT`).
 4. **Deploy**를 눌러요. 카드뉴스 생성 API는 `maxDuration = 300`(Hobby 최대)으로 설정돼 있어요.
 5. 배포 주소가 나오면 Supabase **URL Configuration**의 Site URL과 Redirect URLs에 그 주소를 추가해요.
+
+## 관리자 페이지
+
+`/admin` 에서 사용자, 만들어진 핵심 카드, 오늘 Gemini 요청 수와 오류를 보고, 카드를 만들 Gemini 모델을 고를 수 있어요. `.env.local`과 Vercel의 `ADMIN_EMAILS`에 적은 이메일(쉼표로 여러 개)로 로그인해야 보여요. 계정 메뉴에 "관리자 페이지" 링크가 생겨요.
 
 ## 무료 한도 메모
 

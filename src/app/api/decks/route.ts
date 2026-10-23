@@ -1,8 +1,9 @@
 import { currentUser, unauthorized } from "@/lib/auth";
 import { getDeck } from "@/lib/data";
-import { GEMINI_MODEL, GeminiError, generateDeck } from "@/lib/gemini";
+import { GeminiError, generateDeck } from "@/lib/gemini";
+import { getModel } from "@/lib/models";
 import { supabaseAdmin } from "@/lib/supabase-server";
-import { logAttempt, todayUsage } from "@/lib/usage";
+import { DAILY_LIMIT, logAttempt, todayAppUsage } from "@/lib/usage";
 import { fetchComments, fetchVideoInfo, parseVideoId } from "@/lib/youtube";
 
 // Vercel Hobby 함수 최대 시간. Gemini 호출은 240초에 끊는다.
@@ -34,9 +35,9 @@ export async function POST(request: Request) {
   if (!info) return fail("영상을 찾을 수 없어요. 비공개이거나 삭제된 영상일 수 있어요.", 404);
   if (!info.isChannel) return fail("라이브 아카데미(@LVACDMY) 채널 영상만 핵심 카드로 만들 수 있어요.", 400);
 
-  const usage = await todayUsage(user.id);
-  if (usage.app >= usage.appLimit) return fail("오늘 앱 전체 생성 한도를 다 썼어요. 한국 시간 오후 4~5시에 다시 채워져요.", 429);
-  if (usage.me >= usage.meLimit) return fail(`하루에 ${usage.meLimit}번까지 만들 수 있어요. 내일 다시 시도해 주세요.`, 429);
+  if ((await todayAppUsage()) >= DAILY_LIMIT) {
+    return fail("오늘 앱 전체 생성 한도를 다 썼어요. 한국 시간 오후 4~5시에 다시 채워져요.", 429);
+  }
 
   // 만드는 중 표시를 먼저 걸어서, 다른 사람이 같은 영상을 동시에 요청해도 Gemini를 두 번 부르지 않게 한다
   const db = supabaseAdmin();
@@ -72,10 +73,12 @@ export async function POST(request: Request) {
   try {
     // 댓글은 영상 속 문장의 철자 확인용 참고 자료 (저장하지 않는다)
     const comments = await fetchComments(videoId);
-    const content = await generateDeck(videoId, comments, (a) => logAttempt(GEMINI_MODEL, user.id, videoId, a));
+    // 관리자 페이지에서 고른 모델 (없으면 환경 변수·기본값)
+    const model = await getModel();
+    const content = await generateDeck(videoId, comments, model, (a) => logAttempt(model, user.id, videoId, a));
     await db
       .from("decks")
-      .update({ status: "ready", content, model: GEMINI_MODEL, updated_at: new Date().toISOString() })
+      .update({ status: "ready", content, model, updated_at: new Date().toISOString() })
       .eq("video_id", videoId);
     return Response.json({ videoId, status: "ready" });
   } catch (err) {

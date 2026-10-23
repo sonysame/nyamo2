@@ -34,7 +34,7 @@
   2. oEmbed로 채널을 확인한다. 작성자 URL이 @LVACDMY(또는 채널 ID `UCGDA1e6qQSAH0R9hoip9VrA`)가 아니면 거절. 비공개·삭제된 영상도 여기서 걸러진다.
   3. 이미 만들어진 카드뉴스가 있으면 Gemini를 부르지 않고 바로 연다.
   4. 다른 사람이 만드는 중(5분 이내)이면 "만드는 중"이라고 알리고 기다린다.
-  5. 하루 한도 확인: 앱 전체 하루 생성 한도(`DAILY_GENERATE_LIMIT`, 기본 400)와 사용자별 하루 한도(`USER_DAILY_LIMIT`, 기본 10).
+  5. 하루 한도 확인: 앱 전체 하루 생성 한도(`DAILY_GENERATE_LIMIT`, 기본 400). 사용자별 하루 한도는 사용자 결정으로 두지 않는다.
 - Gemini 호출 1회로 요약과 카드 내용을 JSON으로 받는다(모델은 `GEMINI_MODEL`, 기본 `gemini-3.5-flash-lite`, 저해상도 영상 모드).
 - 안정성(ListenUp에서 얻은 교훈)
   - 503 high demand는 3초, 10초 쉬고 두 번까지 다시 시도한다(남은 시간이 있을 때만).
@@ -65,6 +65,14 @@
 - 목록은 6시간 동안 캐시한다(한 번 불러올 때 약 30유닛). `YOUTUBE_API_KEY`가 없으면 목록 대신 안내 문구를 보여 준다.
 - 오늘 Gemini 사용량(앱 전체 n/한도, 나 n/한도).
 
+### F6. 관리자 페이지 (`/admin`)
+- `ADMIN_EMAILS`(쉼표로 여러 개)에 있는 계정만 볼 수 있다. 다른 사람에게는 없는 페이지로 보인다. 계정 메뉴에 "관리자 페이지" 링크.
+- 요약: 사용자 수, 만들어진 핵심 카드 수(실패·만드는 중), 오늘 Gemini 요청 수 / 앱 전체 하루 한도(성공·오류·한도 초과).
+- 사용자 목록: 이름, 이메일, 가입, 마지막 로그인, 본 영상 수, 만든 카드 수, 오늘 Gemini 요청 수.
+- 핵심 카드 목록: 영상, 상태, 문장 수, 모델, 만든 사람, 만든 때, 실패 이유.
+- 오늘 Gemini 오류 최근 10개.
+- **Gemini 모델 고르기**: Gemini가 실제로 제공하는 flash·pro 모델 중에서 고르면 `app_settings` 표에 저장되고, 다음에 만드는 카드부터 적용된다(30초 안에 반영). 순서는 관리자 설정 → `GEMINI_MODEL` → 기본값 `gemini-3.5-flash-lite`.
+
 ## 6. 저작권·약관 원칙
 - 영상 대본 전문이나 해설을 그대로 옮겨 저장하지 않는다. 저장하는 것은 영상이 가르치는 **학습 문장**(짧은 문장), AI가 **자기 말로 쓴 짧은 요약과 해설**, AI가 **새로 만든 예문**뿐이다.
 - 영상은 YouTube **공식 임베드 플레이어**로만 재생한다. 다운로드, 광고 제거, 회원 전용 영상 처리는 하지 않는다.
@@ -75,13 +83,14 @@
 - `decks`: video_id(PK), title, author, thumbnail_url, status(processing/ready/failed), content(jsonb: 요약과 카드), model, error, created_by, started_at, created_at, updated_at
 - `user_decks`: user_id, video_id, last_opened_at (PK user_id+video_id)
 - `gemini_log`: id, created_at, user_id, video_id, model, status(ok/error/rate_limited), message, input_tokens, output_tokens
+- `app_settings`: key(PK), value, updated_at (관리자가 고른 모델 등)
 - 모든 표에 RLS를 켜고 정책은 두지 않는다. 서버만 secret key로 접근하고, 사용자는 쿠키 세션으로 확인한다.
 
 ## 8. 화면 목록
-`/`(홈, 비로그인 시 소개), `/v/[videoId]`(핵심 카드), `/cards`(핵심 카드 모아 보기), `/auth/callback`(로그인 콜백)
+`/`(홈, 비로그인 시 소개), `/v/[videoId]`(핵심 카드), `/cards`(핵심 카드 모아 보기), `/admin`(관리자), `/auth/callback`(로그인 콜백)
 
 ## 9. 범위 밖 (나중에)
-관리자 페이지, 영작 입력 채점, 다른 채널 지원, 카드 직접 편집, 이미지로 저장 및 공유, 재생목록 한 번에 처리.
+영작 입력 채점, 다른 채널 지원, 카드 직접 편집, 이미지로 저장 및 공유, 재생목록 한 번에 처리.
 
 ## 10. 완료 기준
 - 위 F1~F5가 로컬(`npm run dev`)에서 동작한다.

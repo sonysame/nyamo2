@@ -8,6 +8,6 @@ if (!id) throw new Error("영상 URL 또는 ID를 넣어 주세요.");
 const t = Date.now();
 const comments = await fetchComments(id);
 console.error("댓글", comments.length, "개 참고");
-const deck = await generateDeck(id, comments, async (a) => console.error("시도:", a));
+const deck = await generateDeck(id, comments, process.env.GEMINI_MODEL || "gemini-3.5-flash-lite", async (a) => console.error("시도:", a));
 console.log(JSON.stringify(deck, null, 2));
 console.error((Date.now() - t) / 1000, "초");

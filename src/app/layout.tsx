@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthProvider } from "@/components/auth-provider";
 import { AccountMenu } from "@/components/account-menu";
+import { currentUser, isAdmin } from "@/lib/auth";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
   description: "라이브 아카데미 영상의 영어 문장을 핵심 카드로 모아 봐요.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // 관리자에게만 계정 메뉴에 관리자 페이지 링크를 보여 준다
+  const admin = isAdmin(await currentUser());
   return (
     <html lang="ko" className="h-full antialiased">
       <head>
@@ -35,7 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   핵심 카드
                 </Link>
               </nav>
-              <AccountMenu />
+              <AccountMenu admin={admin} />
             </div>
           </header>
           <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:py-10">{children}</main>

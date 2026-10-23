@@ -1,11 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "./auth-provider";
 import { GoogleMark } from "./google-mark";
 
-/** 헤더 오른쪽: 프로필, 로그인·로그아웃 */
-export function AccountMenu() {
+/** 헤더 오른쪽: 프로필, 로그인·로그아웃. admin이면 관리자 페이지 링크도 보여 준다. */
+export function AccountMenu({ admin = false }: { admin?: boolean }) {
   const { user, signIn, signOut } = useAuth();
   const [open, setOpen] = useState(false);
 
@@ -46,6 +47,15 @@ export function AccountMenu() {
         <div className="absolute right-0 top-11 z-50 w-56 rounded-2xl border border-line bg-surface p-3 shadow-card">
           <p className="truncate text-sm font-semibold">{name}</p>
           {user.email && <p className="truncate text-xs text-muted">{user.email}</p>}
+          {admin && (
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              className="mt-3 block w-full rounded-xl bg-accent-soft py-2 text-center text-sm font-semibold text-accent hover:bg-accent hover:text-white"
+            >
+              관리자 페이지
+            </Link>
+          )}
           <button
             onClick={signOut}
             className="mt-3 w-full rounded-xl border border-line py-2 text-sm font-semibold hover:border-danger hover:text-danger"

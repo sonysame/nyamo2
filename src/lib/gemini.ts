@@ -3,8 +3,6 @@ import { GoogleGenAI, MediaResolution, Type } from "@google/genai";
 import type { DeckContent, Sentence } from "./types.ts";
 import { watchUrl } from "./youtube.ts";
 
-export const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
-
 // Vercel Hobby 함수는 300초에 강제로 끊긴다. 그 전에 끊어서 실패를 기록하고 알려 준다.
 const GEMINI_TIMEOUT_MS = 240_000;
 // 붐빌 때(503)는 잠깐 쉬었다가 두 번까지 다시 시도한다
@@ -171,6 +169,7 @@ export function normalizeDeck(raw: unknown): DeckContent {
 export async function generateDeck(
   videoId: string,
   comments: string[],
+  model: string,
   onAttempt: (a: Attempt) => Promise<void>,
 ): Promise<DeckContent> {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -181,7 +180,7 @@ export async function generateDeck(
   for (let attempt = 0; ; attempt++) {
     try {
       const res = await ai.models.generateContent({
-        model: GEMINI_MODEL,
+        model,
         contents: [{ role: "user", parts: [{ fileData: { fileUri: watchUrl(videoId) } }, { text: PROMPT + commentsSection(comments) }] }],
         config: {
           // 저해상도로 보면 영상 토큰이 1/3 정도로 줄어든다 (10분 영상 약 5만 토큰). 화면 글자는 그래도 읽는다.
