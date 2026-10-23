@@ -2,6 +2,7 @@ import "server-only";
 import { GoogleGenAI, MediaResolution, Type } from "@google/genai";
 import type { DeckContent, Sentence } from "./types.ts";
 import { watchUrl } from "./youtube.ts";
+import { keyExpressions } from "./expressions.ts";
 
 // Vercel Hobby 함수는 300초에 강제로 끊긴다. 그 전에 끊어서 실패를 기록하고 알려 준다.
 const GEMINI_TIMEOUT_MS = 240_000;
@@ -67,7 +68,8 @@ const PROMPT = [
   "  - en: the English sentence exactly as the lesson presents it.",
   "  - ko: its natural Korean meaning (use the lesson's Korean if it gives one).",
   "  - start: the second (integer) in the video where this sentence is first presented.",
-  "  - expressions: 1-3 key chunks from the sentence worth memorizing (en = the chunk as written in the sentence, ko = short Korean meaning).",
+  "  - expressions: 1-2 key expressions or patterns that THIS LESSON is teaching and that appear in this sentence (e.g. the target pattern such as \"I'm glad\", \"happen to\" or \"It's a good thing\"). en = the expression exactly as written in the sentence, ko = short Korean meaning.",
+  "    Do not pick incidental content words (like \"my wallet\" or \"I can help\") and never the whole sentence. When several sentences teach the same pattern, use that same pattern for each of them.",
   "  - note: 1-2 short Korean sentences (존댓말) explaining the nuance or usage, in your own words (not a transcription).",
   "  - examples: 1-2 NEW example sentences you write yourself that reuse the key expression in another situation (en + ko). Do not copy examples from the video.",
   "  If the video is not a sentence lesson (e.g. a story, article, conversation or live stream), pick up to 10 of the most useful English sentences it contains.",
@@ -145,7 +147,7 @@ export function normalizeDeck(raw: unknown): DeckContent {
       en: clean(s?.en, 300),
       ko: clean(s?.ko, 300),
       start: Math.max(0, Math.floor(Number(s?.start) || 0)),
-      expressions: cleanPairs(s?.expressions, 3),
+      expressions: keyExpressions(clean(s?.en, 300), cleanPairs(s?.expressions, 3)),
       note: clean(s?.note),
       examples: cleanPairs(s?.examples, 2),
     }))

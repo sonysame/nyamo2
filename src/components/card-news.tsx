@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import type { Deck, DeckContent } from "@/lib/types";
+import { keyExpressions } from "@/lib/expressions";
 import { CHANNEL, watchUrl } from "@/lib/youtube";
 import { speak, VideoModal } from "./media";
 
@@ -115,7 +116,7 @@ export function WrapUpCard({ deck, n, linkTitle = false }: { deck: ReadyDeck; n?
           <li key={i} className="flex gap-3 py-3.5">
             <span className="w-6 shrink-0 pt-0.5 text-right font-black text-mark tabular-nums">{i + 1}</span>
             <div className="min-w-0 flex-1">
-              {line(`en${i}`, hide === "en", "text-[17px] font-semibold leading-snug", highlight(s.en, s.expressions))}
+              {line(`en${i}`, hide === "en", "text-[17px] font-semibold leading-snug", highlight(s.en, keyExpressions(s.en, s.expressions)))}
               {line(`ko${i}`, hide === "ko", "mt-1 text-[15px] text-white/70", s.ko)}
             </div>
             <div className="shrink-0 text-white/50">
