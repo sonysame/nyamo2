@@ -71,6 +71,8 @@ node --conditions=react-server --env-file=.env.local scripts/try-video.mjs https
 
 ## Vercel에 배포하기
 
+지금 배포 주소: **https://nyamo2.vercel.app** (Vercel 프로젝트 `nyamo2`, GitHub `sonysame/nyamo2`). CLI로 다시 배포하려면 이 폴더에서 `vercel deploy --prod`를 실행해요. `vercel.json`에 `"framework": "nextjs"`를 적어 둬서 CLI로 만든 프로젝트에서도 Next.js로 빌드돼요.
+
 1. 이 폴더를 GitHub 저장소로 올려요(`.env.local`은 `.gitignore`에 들어 있어 올라가지 않아요).
 2. [vercel.com](https://vercel.com) → **Add New → Project**에서 저장소를 가져와요. Framework는 Next.js로 자동 인식돼요.
 3. **Environment Variables**에 `.env.example`의 값을 모두 넣어요(`GEMINI_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `YOUTUBE_API_KEY`, `GEMINI_MODEL`, `DAILY_GENERATE_LIMIT`, `USER_DAILY_LIMIT`).
