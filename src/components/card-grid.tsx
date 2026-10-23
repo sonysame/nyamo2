@@ -34,7 +34,10 @@ export function CardGrid({ decks }: { decks: GridDeck[] }) {
               onClick={() => setOpen(d)}
               className="flex aspect-[4/3] w-full flex-col rounded-2xl bg-ink p-4 text-left text-white shadow-card transition hover:-translate-y-0.5 hover:ring-2 hover:ring-mark"
             >
-              <span className="text-[11px] font-bold tracking-widest text-mark">{d.n ? `#${d.n}` : "WRAP UP"}</span>
+              <span className="flex items-start justify-between gap-2">
+                <span className="text-[11px] font-bold tracking-widest text-mark">{d.n ? `#${d.n}` : "WRAP UP"}</span>
+                {d.date && <span className="text-[11px] text-white/50 tabular-nums">{d.date}</span>}
+              </span>
               <span className="mt-1.5 line-clamp-4 text-sm font-bold leading-snug">{d.title}</span>
               <span className="mt-auto text-xs text-white/50">문장 {d.content.sentences.length}개</span>
             </button>

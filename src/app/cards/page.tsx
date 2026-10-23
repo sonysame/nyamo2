@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { myDecks } from "@/lib/data";
+import { koreanDate } from "@/lib/day";
 import { fetchChannelVideos } from "@/lib/youtube";
 import { CardGrid } from "@/components/card-grid";
 
@@ -31,7 +32,7 @@ export default async function CardsPage() {
         </p>
       ) : (
         <div className="mt-4">
-          <CardGrid decks={sorted.map((d) => ({ ...d, n: order.get(d.video_id) }))} />
+          <CardGrid decks={sorted.map((d) => ({ ...d, n: order.get(d.video_id), date: koreanDate(d.made_at) }))} />
         </div>
       )}
     </div>

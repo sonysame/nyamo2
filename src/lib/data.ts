@@ -4,10 +4,10 @@ import type { Deck, DeckContent } from "./types";
 
 const DECK_COLUMNS = "video_id, title, author, thumbnail_url, status, content, error";
 
-export async function getDeck(videoId: string): Promise<(Deck & { started_at: string }) | null> {
+export async function getDeck(videoId: string): Promise<(Deck & { started_at: string; created_at: string }) | null> {
   const { data } = await supabaseAdmin()
     .from("decks")
-    .select(`${DECK_COLUMNS}, started_at`)
+    .select(`${DECK_COLUMNS}, started_at, created_at`)
     .eq("video_id", videoId)
     .maybeSingle();
   return data;

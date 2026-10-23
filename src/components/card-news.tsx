@@ -6,7 +6,8 @@ import type { Deck, DeckContent } from "@/lib/types";
 import { CHANNEL, watchUrl } from "@/lib/youtube";
 import { speak, VideoModal } from "./media";
 
-export type ReadyDeck = Pick<Deck, "video_id" | "title"> & { content: DeckContent };
+/** date: 핵심 카드를 만든 날짜 (한국 날짜, 카드 오른쪽 위에 표시) */
+export type ReadyDeck = Pick<Deck, "video_id" | "title"> & { content: DeckContent; date?: string };
 
 /** 영상 하나의 핵심 카드 화면 */
 export function CardNews({ deck }: { deck: ReadyDeck }) {
@@ -72,9 +73,12 @@ export function WrapUpCard({ deck, n, linkTitle = false }: { deck: ReadyDeck; n?
 
   return (
     <article className="rounded-3xl bg-ink p-6 text-white shadow-card sm:p-8">
-      <p className="text-xs font-bold tracking-widest text-mark">
-        {n ? `#${n} · ` : ""}WRAP UP · {sentences.length} SENTENCES
-      </p>
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-xs font-bold tracking-widest text-mark">
+          {n ? `#${n} · ` : ""}WRAP UP · {sentences.length} SENTENCES
+        </p>
+        {deck.date && <span className="shrink-0 text-xs font-semibold text-white/50 tabular-nums">{deck.date}</span>}
+      </div>
       <h2 className="mt-2 text-xl font-black leading-snug sm:text-2xl">
         {linkTitle ? (
           <Link href={`/v/${deck.video_id}`} className="hover:text-mark">

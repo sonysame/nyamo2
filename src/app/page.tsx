@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { currentUser } from "@/lib/auth";
 import { myDecks, readyVideoIds } from "@/lib/data";
+import { koreanDate } from "@/lib/day";
 import { fetchChannelVideos } from "@/lib/youtube";
 import { CreatePanel } from "@/components/create-panel";
 import { LoginHero } from "@/components/login-hero";
 import { CardGrid } from "@/components/card-grid";
-
-/** 한국 날짜로 (예: 2026-10-24). 서버에서 만들어 넘겨서 브라우저 시간대와 상관없이 같게 보인다 */
-const koreanDate = (iso: string) => new Date(iso).toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
 
 export default async function Home({ searchParams }: PageProps<"/">) {
   const user = await currentUser();
@@ -39,7 +37,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
             </Link>
           </div>
           {/* 최근에 연 4개 */}
-          <CardGrid decks={decks.slice(0, 4).map((d) => ({ ...d, n: channelNumber(d.video_id) }))} />
+          <CardGrid decks={decks.slice(0, 4).map((d) => ({ ...d, n: channelNumber(d.video_id), date: koreanDate(d.made_at) }))} />
         </section>
       )}
 
