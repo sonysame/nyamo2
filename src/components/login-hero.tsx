@@ -2,36 +2,35 @@
 
 import { useAuth } from "./auth-provider";
 import { GoogleMark } from "./google-mark";
+import { HowItWorksComic } from "./how-it-works-comic";
 
 /** 로그인하지 않은 사람에게 보여 주는 첫 화면 */
 export function LoginHero({ next, error }: { next?: string; error?: boolean }) {
   const { signIn } = useAuth();
   return (
-    <div className="grid items-center gap-10 py-6 md:grid-cols-[1.1fr_1fr]">
-      <div>
-        <p className="text-sm font-bold text-accent">라이브 아카데미 영상으로 공부하는 분께</p>
-        <h1 className="mt-2 text-4xl font-black leading-tight tracking-tight sm:text-5xl">
-          영상 속 영어 문장,
-          <br />
-          <span className="marker">핵심 카드</span>로 모아서
-          <br />
-          매일 꺼내 보세요
-        </h1>
-        <ul className="mt-6 space-y-2 text-[15px] text-muted">
-          <li>① 영상 주소를 넣으면 영상에서 배운 문장이 한 장에 정리돼요.</li>
-          <li>② 영어 문장과 한국어 뜻을 나란히 보고, 발음 듣기와 원본 영상도 바로 볼 수 있어요.</li>
-          <li>③ 한국어나 영어를 가리고 떠올려 보며 공부해요.</li>
-        </ul>
-        <button
-          onClick={() => signIn(next ?? "/")}
-          className="mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 font-bold text-white shadow-card hover:bg-ink-soft"
-        >
-          <GoogleMark className="h-5 w-5 rounded-full bg-white p-0.5" />
-          구글로 시작하기
-        </button>
-        {error && <p className="mt-3 text-sm font-semibold text-danger">로그인하지 못했어요. 다시 시도해 주세요.</p>}
+    <div className="space-y-12 py-6">
+      <div className="grid items-center gap-10 md:grid-cols-[1.1fr_1fr]">
+        <div>
+          <p className="text-sm font-bold text-accent">라이브 아카데미 영상으로 공부하는 분께</p>
+          <h1 className="mt-2 text-4xl font-black leading-tight tracking-tight sm:text-5xl">
+            영상 속 영어 문장,
+            <br />
+            <span className="marker">핵심 카드</span>로 모아서
+            <br />
+            매일 꺼내 보세요
+          </h1>
+          <button
+            onClick={() => signIn(next ?? "/")}
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 font-bold text-white shadow-card hover:bg-ink-soft"
+          >
+            <GoogleMark className="h-5 w-5 rounded-full bg-white p-0.5" />
+            구글로 시작하기
+          </button>
+          {error && <p className="mt-3 text-sm font-semibold text-danger">로그인하지 못했어요. 다시 시도해 주세요.</p>}
+        </div>
+        <SampleCard />
       </div>
-      <SampleCard />
+      <HowItWorksComic />
     </div>
   );
 }
