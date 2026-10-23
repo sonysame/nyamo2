@@ -20,7 +20,7 @@ const PANELS: Panel[] = [
     kind: "orange",
     line: (
       <>
-        영상에서 배운 문장을 <b>핵심 카드</b> 한 장에!
+        배운 문장을 <b>핵심 카드</b>로 모아 줄게!
         <br />
         핵심 표현은 <b className="rounded bg-ink px-1 text-mark">노란색</b>이야
       </>
