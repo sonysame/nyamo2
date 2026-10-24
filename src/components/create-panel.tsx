@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ChannelVideo } from "@/lib/youtube";
 import { useCreateDeck, type CreateState } from "./use-create-deck";
 import { VideoModal } from "./media";
+import { CardModal, type GridDeck } from "./card-grid";
+import { koreanDate } from "@/lib/day";
+import type { DeckContent } from "@/lib/types";
 
 const PER_PAGE = 20;
 
@@ -115,6 +117,20 @@ function ChannelList({
   const shown = filtered.slice(current * PER_PAGE, (current + 1) * PER_PAGE);
   const next = videos[nextIndex];
   const [playing, setPlaying] = useState<string | null>(null);
+  // '보기'를 누르면 페이지를 옮기지 않고 그 자리에서 핵심 카드를 크게 띄운다
+  const [viewing, setViewing] = useState<GridDeck | null>(null);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const view = async (id: string) => {
+    setLoadingId(id);
+    const res = await fetch(`/api/decks/${id}`, { cache: "no-store" }).catch(() => null);
+    const data = (await res?.json().catch(() => ({}))) as
+      | { deck?: { video_id: string; title: string; content: DeckContent; created_at: string; stars: number } }
+      | undefined;
+    setLoadingId(null);
+    if (!data?.deck) return;
+    const n = videos.findIndex((v) => v.id === id) + 1;
+    setViewing({ ...data.deck, n: n || undefined, date: mine[id] ?? koreanDate(data.deck.created_at) });
+  };
 
   const play = (id: string) => (
     <button
@@ -130,9 +146,13 @@ function ChannelList({
     <span className="flex shrink-0 items-center gap-1.5">
       {play(id)}
       {readySet.has(id) ? (
-      <Link href={`/v/${id}`} className="rounded-full bg-success-soft px-3 py-1 text-xs font-bold text-success">
-        보기
-      </Link>
+      <button
+        onClick={() => view(id)}
+        disabled={loadingId === id}
+        className="rounded-full bg-success-soft px-3 py-1 text-xs font-bold text-success disabled:opacity-50"
+      >
+        {loadingId === id ? "여는 중…" : "보기"}
+      </button>
     ) : (
       <button
         disabled={busy}
@@ -257,6 +277,7 @@ function ChannelList({
         </button>
       </div>
       {playing && <VideoModal videoId={playing} onClose={() => setPlaying(null)} />}
+      {viewing && <CardModal deck={viewing} onClose={() => setViewing(null)} />}
     </section>
   );
 }

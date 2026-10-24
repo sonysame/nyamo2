@@ -65,6 +65,12 @@
 - 목록은 6시간 동안 캐시한다(한 번 불러올 때 약 30유닛). `YOUTUBE_API_KEY`가 없으면 목록 대신 안내 문구를 보여 준다.
 - 오늘 Gemini 사용량(앱 전체 n/한도, 나 n/한도).
 
+### F5-2. 핵심 카드 퀴즈·별·영상
+- **퀴즈**: 카드마다 "✏️ 퀴즈". 카드에 있는 문장으로 문제를 만든다(Gemini 호출 없음). 핵심 표현 보기가 4개 이상 모이면 빈칸 채우기(4지선다), 아니면 한국어를 보고 영어 문장 고르기. 고르면 바로 정답과 문장을 보여 주고 발음을 들을 수 있다. 끝나면 점수.
+- **별 1~3개**: 카드 오른쪽 위 별을 눌러 표시(같은 개수를 다시 누르면 0개). 계정마다 `user_decks.stars`에 저장. 핵심 카드 모아 보기에서 "영상 순 / ★ 별 많은 순" 정렬.
+- **보기**: 채널 목록의 "보기"는 페이지를 옮기지 않고 그 자리에서 카드를 크게 띄우고 "닫기 ✕"(Esc, 바깥쪽 클릭)로 닫는다.
+- **영상 자막(CC)**은 꺼진 채 시작한다(cc_load_policy=0 + 플레이어 API로 자막 모듈 내리기).
+
 ### F6. 관리자 페이지 (`/admin`)
 - `ADMIN_EMAILS`(쉼표로 여러 개)에 있는 계정만 볼 수 있다. 다른 사람에게는 없는 페이지로 보인다. 계정 메뉴에 "관리자 페이지" 링크.
 - 요약: 사용자 수, 만들어진 핵심 카드 수(실패·만드는 중), 오늘 Gemini 요청 수 / 앱 전체 하루 한도(성공·오류·한도 초과).
@@ -81,7 +87,7 @@
 
 ## 7. 데이터 모델 (Supabase)
 - `decks`: video_id(PK), title, author, thumbnail_url, status(processing/ready/failed), content(jsonb: 요약과 카드), model, error, created_by, started_at, created_at, updated_at
-- `user_decks`: user_id, video_id, last_opened_at (PK user_id+video_id)
+- `user_decks`: user_id, video_id, last_opened_at, stars(0~3) (PK user_id+video_id)
 - `gemini_log`: id, created_at, user_id, video_id, model, status(ok/error/rate_limited), message, input_tokens, output_tokens
 - `app_settings`: key(PK), value, updated_at (관리자가 고른 모델 등)
 - 모든 표에 RLS를 켜고 정책은 두지 않는다. 서버만 secret key로 접근하고, 사용자는 쿠키 세션으로 확인한다.

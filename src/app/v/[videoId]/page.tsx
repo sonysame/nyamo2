@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { currentUser } from "@/lib/auth";
-import { getDeck, markOpened } from "@/lib/data";
+import { getDeck, markOpened, myStars } from "@/lib/data";
 import { koreanDate } from "@/lib/day";
 import type { DeckContent } from "@/lib/types";
 import { CardNews } from "@/components/card-news";
@@ -13,7 +13,8 @@ export default async function DeckPage({ params }: PageProps<"/v/[videoId]">) {
   if (deck?.status === "ready" && deck.content) {
     // 연 핵심 카드는 내 목록에 넣는다 (본 영상으로 표시된다)
     if (user) await markOpened(user.id, videoId);
-    return <CardNews deck={{ ...deck, content: deck.content as DeckContent, date: koreanDate(deck.created_at) }} />;
+    const stars = user ? await myStars(user.id, videoId) : 0;
+    return <CardNews deck={{ ...deck, content: deck.content as DeckContent, date: koreanDate(deck.created_at), stars }} />;
   }
 
   return (

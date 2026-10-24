@@ -32,7 +32,7 @@ export default async function CardsPage() {
         </p>
       ) : (
         <div className="mt-4">
-          <CardGrid decks={sorted.map((d) => ({ ...d, n: order.get(d.video_id), date: koreanDate(d.made_at) }))} />
+          <CardGrid sortable decks={sorted.map((d) => ({ ...d, n: order.get(d.video_id), date: koreanDate(d.made_at) }))} />
         </div>
       )}
     </div>

@@ -23,7 +23,7 @@
 ### 1. Supabase 새 프로젝트
 
 1. [supabase.com](https://supabase.com)에서 **New project**를 만들어요(무료 등급, 지역은 Northeast Asia (Seoul) 추천).
-2. **SQL Editor**에 [supabase/schema.sql](supabase/schema.sql) 내용을 붙여 넣고 실행해요. (이미 예전 schema.sql로 만들었다면 [supabase/migrations/001_app_settings.sql](supabase/migrations/001_app_settings.sql)만 실행해요.)
+2. **SQL Editor**에 [supabase/schema.sql](supabase/schema.sql) 내용을 붙여 넣고 실행해요. (이미 예전 schema.sql로 만들었다면 [supabase/migrations](supabase/migrations)의 파일을 번호 순서대로 실행해요: `001_app_settings.sql`(관리자 모델 선택), `002_stars.sql`(별).)
 3. **Project Settings → API Keys**에서 다음 값을 복사해요.
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
    - Publishable key → `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`

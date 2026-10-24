@@ -23,6 +23,8 @@ create table if not exists user_decks (
   user_id uuid not null references auth.users (id) on delete cascade,
   video_id text not null references decks (video_id) on delete cascade,
   last_opened_at timestamptz not null default now(),
+  -- 사용자가 누른 별 개수 (0~3)
+  stars smallint not null default 0 check (stars between 0 and 3),
   primary key (user_id, video_id)
 );
 

@@ -35,7 +35,19 @@ export function SpeakButton({ text, className = "" }: { text: string; className?
   );
 }
 
-/** 원본 영상을 YouTube 공식 임베드 플레이어로 띄운다 */
+/**
+ * 자막(CC)을 끈다. cc_load_policy=0만으로는 YouTube 계정의 '자막 항상 표시' 설정을 이기지 못해서,
+ * 플레이어 API(enablejsapi=1)로 자막 모듈을 내린다. 플레이어가 준비되는 시점을 몰라서 몇 번 나눠 보낸다.
+ */
+function turnOffCaptions(frame: HTMLIFrameElement) {
+  const send = (msg: object) => frame.contentWindow?.postMessage(JSON.stringify(msg), "*");
+  send({ event: "listening", id: 1 });
+  for (const ms of [500, 1500, 3000, 6000]) {
+    setTimeout(() => send({ event: "command", func: "unloadModule", args: ["captions"] }), ms);
+  }
+}
+
+/** 원본 영상을 YouTube 공식 임베드 플레이어로 띄운다 (자막은 꺼진 채 시작) */
 export function VideoModal({ videoId, onClose }: { videoId: string; onClose: () => void }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -54,7 +66,8 @@ export function VideoModal({ videoId, onClose }: { videoId: string; onClose: () 
       <div className="w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
         <div className="aspect-video overflow-hidden rounded-2xl bg-black">
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`}
+            src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&cc_load_policy=0&enablejsapi=1`}
+            onLoad={(e) => turnOffCaptions(e.currentTarget)}
             title="원본 영상"
             allow="autoplay; encrypted-media; picture-in-picture"
             allowFullScreen
